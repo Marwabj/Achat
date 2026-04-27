@@ -1,13 +1,16 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.6-eclipse-temurin-17'
-            args '-v /root/.m2:/root/.m2'
-        }
+    agent any
+
+    tools {
+        maven 'Maven'
+    }
+
+    environment {
+        JAVA_HOME = '/opt/java/openjdk'
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -17,6 +20,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir('achat') {
+                    sh 'java -version'
                     sh 'mvn clean package -DskipTests'
                 }
             }
@@ -25,13 +29,7 @@ pipeline {
         stage('Test') {
             steps {
                 dir('achat') {
-                    echo 'Aucun test dans le projet → étape Test ignorée'
-                    sh 'mvn test -DskipTests'
-                }
-            }
-            post {
-                always {
-                    echo 'Pas de rapports JUnit (aucun test défini)'
+                    sh 'mvn test'
                 }
             }
         }
@@ -46,11 +44,7 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'Build réussi !'
-        }
-        failure {
-            echo 'Build en échec.'
-        }
+        success { echo 'Build réussi !' }
+        failure { echo 'Build en échec.' }
     }
 }
