@@ -75,22 +75,26 @@ EOF
             }
         }
 
-       stage('Docker Build') {
-           steps {
-               sh 'ls -la achat/'
-               sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} achat/'
-           }
-       }
+        stage('Docker Build') {
+            steps {
+                dir('achat') {
+                    sh 'ls -la target/'
+                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                }
+            }
+        }
 
-       stage('Docker Run') {
-           steps {
-               sh '''
-                   docker stop achat-app || true
-                   docker rm achat-app || true
-                   docker-compose -f achat/docker-compose.yml up -d
-               '''
-           }
-       }
+        stage('Docker Run') {
+            steps {
+                dir('achat') {
+                    sh '''
+                        docker stop achat-app || true
+                        docker rm achat-app || true
+                        docker-compose up -d
+                    '''
+                }
+            }
+        }
 
         stage('Archive') {
             steps {
