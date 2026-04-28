@@ -8,6 +8,8 @@ pipeline {
     environment {
         JAVA_HOME = '/opt/java/openjdk'
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
+        IMAGE_NAME = 'achat'
+        IMAGE_TAG = '1.0'
     }
 
     stages {
@@ -73,6 +75,26 @@ EOF
             }
         }
 
+        stage('Docker Build') {
+            steps {
+                dir('achat') {
+                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                }
+            }
+        }
+
+        stage('Docker Run') {
+            steps {
+                dir('achat') {
+                    sh '''
+                        docker stop achat-app || true
+                        docker rm achat-app || true
+                        docker-compose up -d
+                    '''
+                }
+            }
+        }
+
         stage('Archive') {
             steps {
                 dir('achat') {
@@ -83,7 +105,7 @@ EOF
     }
 
     post {
-        success { echo 'Build réussi !' }
+        success { echo 'Pipeline complet — application déployée dans Docker !' }
         failure { echo 'Build en échec.' }
     }
 }
