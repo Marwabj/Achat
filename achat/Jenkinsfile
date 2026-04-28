@@ -53,10 +53,20 @@ pipeline {
                         passwordVariable: 'NEXUS_PASS'
                     )]) {
                         sh '''
+                            cat > /tmp/settings.xml << EOF
+<settings>
+  <servers>
+    <server>
+      <id>nexus-snapshots</id>
+      <username>$NEXUS_USER</username>
+      <password>$NEXUS_PASS</password>
+    </server>
+  </servers>
+</settings>
+EOF
                             mvn deploy -DskipTests \
-                            -DaltDeploymentRepository=nexus-snapshots::default::http://host.docker.internal:8081/repository/maven-snapshots/ \
-                            -Dusername=$NEXUS_USER \
-                            -Dpassword=$NEXUS_PASS
+                            -s /tmp/settings.xml \
+                            -DaltDeploymentRepository=nexus-snapshots::default::http://host.docker.internal:8081/repository/maven-snapshots/
                         '''
                     }
                 }
