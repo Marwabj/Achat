@@ -78,7 +78,6 @@ EOF
         stage('Docker Build') {
             steps {
                 dir('achat') {
-                    sh 'ls -la target/'
                     sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
                 }
             }
@@ -86,13 +85,17 @@ EOF
 
         stage('Docker Run') {
             steps {
-                dir('achat') {
-                    sh '''
-                        docker stop achat-app || true
-                        docker rm achat-app || true
-                        docker-compose up -d
-                    '''
-                }
+                sh '''
+                    docker stop achat-app || true
+                    docker rm achat-app || true
+                    docker run -d \
+                        --name achat-app \
+                        -p 8090:8089 \
+                        -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/achat?createDatabaseIfNotExist=true \
+                        -e SPRING_DATASOURCE_USERNAME=user \
+                        -e SPRING_DATASOURCE_PASSWORD=password \
+                        achat:1.0
+                '''
             }
         }
 
