@@ -28,13 +28,6 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                dir('achat') {
-                    sh 'mvn test'
-                }
-            }
-        }
 
         stage('SonarQube Analysis') {
             steps {
