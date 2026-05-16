@@ -94,8 +94,11 @@ EOF
                 sh '''
                     docker run --rm \
                         -v /var/run/docker.sock:/var/run/docker.sock \
+                        -v trivy-cache:/root/.cache/trivy \
                         aquasec/trivy:latest image \
                         --severity HIGH,CRITICAL \
+                        --scanners vuln \
+                        --timeout 20m \
                         --no-progress \
                         --exit-code 0 \
                         achat:1.0
