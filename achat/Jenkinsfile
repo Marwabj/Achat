@@ -89,6 +89,20 @@ EOF
             }
         }
 
+        stage('Trivy Scan') {
+            steps {
+                sh '''
+                    docker run --rm \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        aquasec/trivy:latest image \
+                        --severity HIGH,CRITICAL \
+                        --no-progress \
+                        --exit-code 0 \
+                        achat:1.0
+                '''
+            }
+        }
+
         stage('Docker Run') {
             steps {
                 sh '''
