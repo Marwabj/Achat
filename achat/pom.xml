@@ -56,14 +56,10 @@
 			<artifactId>springfox-boot-starter</artifactId>
 			<version>3.0.0</version>
 		</dependency>
-
-		<!-- Actuator pour les métriques -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-
-		<!-- Micrometer pour Prometheus -->
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
@@ -109,6 +105,16 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<!-- OWASP Dependency Check -->
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>8.4.0</version>
+				<configuration>
+					<format>HTML</format>
+					<outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>

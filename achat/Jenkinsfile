@@ -28,6 +28,19 @@ pipeline {
             }
         }
 
+        stage('OWASP Dependency Check') {
+            steps {
+                dir('achat') {
+                    sh 'mvn org.owasp:dependency-check-maven:8.4.0:check -DfailBuildOnCVSS=7 || true'
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'achat/target/dependency-check-report.html',
+                                     allowEmptyArchive: true
+                }
+            }
+        }
 
         stage('SonarQube Analysis') {
             steps {
