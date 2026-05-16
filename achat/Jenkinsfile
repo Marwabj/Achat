@@ -122,6 +122,26 @@ EOF
             }
         }
 
+        stage('OWASP ZAP Scan') {
+            steps {
+                sh '''
+                    docker run --rm \
+                        -v $(pwd):/zap/wrk \
+                        ghcr.io/zaproxy/zaproxy:stable \
+                        zap-baseline.py \
+                        -t http://host.docker.internal:8090/SpringMVC \
+                        -r zap-report.html \
+                        -I
+                '''
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'zap-report.html',
+                                     allowEmptyArchive: true
+                }
+            }
+        }
+
         stage('Archive') {
             steps {
                 dir('achat') {
