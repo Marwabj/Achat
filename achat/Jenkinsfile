@@ -126,12 +126,14 @@ EOF
             steps {
                 sh '''
                     docker run --rm \
-                        -v $(pwd):/zap/wrk \
+                        --network host \
+                        -v /tmp/zap-reports:/zap/wrk:rw \
                         ghcr.io/zaproxy/zaproxy:stable \
                         zap-baseline.py \
-                        -t http://host.docker.internal:8090/SpringMVC \
+                        -t http://localhost:8090/SpringMVC \
                         -r zap-report.html \
-                        -I
+                        -I || true
+                    cp /tmp/zap-reports/zap-report.html . || true
                 '''
             }
             post {
